@@ -25,13 +25,9 @@ class RSS_Articles:
         urls = getArticleURLs(url)
         self.articles = []
 
-        # for url in urls:
-        #     new_article = Article(url)
-        #     self.articles.append(new_article)
-        new_article = Article(urls[15])
-        self.articles.append(new_article)
-
-
+        for url in urls:
+            new_article = Article(url)
+            self.articles.append(new_article)
 
 class Article:
     def __init__(self, url):
@@ -44,4 +40,4 @@ class Article:
 if __name__ == "__main__":
     url = "https://www.cbc.ca/cmlink/rss-politics"
     articles = RSS_Articles(url)
-    print(articles.articles[0].title)
+    print(len(articles.articles))

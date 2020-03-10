@@ -27,7 +27,11 @@ def RSS_Scraper(URL):
     # get story contents, title and author
     story_content = soup.find('div', {'class': 'story'}).find_all('p')
     story_title = soup.find('h1', {'class': 'detailHeadline'}).text
-    story_author = soup.find('span', {'class': 'authorText'}).find('a').text
+
+    try:
+        story_author = soup.find('span', {'class': 'authorText'}).find('a').text
+    except AttributeError as error:
+        story_author = "NO AUTHOR"
 
     # story variable still has special characters
     story = ''
