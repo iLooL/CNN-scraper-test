@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import re
 import requests
 
 def RSS_Scraper(URL):
@@ -34,10 +35,10 @@ def RSS_Scraper(URL):
         story_author = "NO AUTHOR"
 
     # story variable still has special characters
-    story = ''
+    story = ""
 
     for paragraph in story_content:
         story += paragraph.text
-        story += '. '
+        story += " "
 
     return story_title, story_author, story
