@@ -1,30 +1,39 @@
 from bs4 import BeautifulSoup
 import requests
-from RSSfeed import getArticleURLs
 
-url = 'https://www.cbc.ca/cmlink/rss-politics'
+def RSS_Scraper(URL):
+    """
+        Takes URL of RSS feed and returns the contents of a single article
 
-# get all article links
-response = getArticleURLs(url)
+    Arguments:
+        URL [string] -- URL of RSS feed article, works on CBC
+        Politics (maybe the others?) RSS feed
 
-# take first article
-first_article_url = response[0]
-# remove rss URL ending
-first_article_url = first_article_url.replace('?cmp=rss', '')
+    Returns: All variables as strings
+        story_title -- title of article
+        story_author -- who authoured the content
+        story -- the articles written content
 
-# request first webpage
-html = requests.get(first_article_url)
-    
-soup = BeautifulSoup(html.content, 'lxml')
+    Todo:
+        -story variable still has special characters
+    """     
+    # remove rss URL ending
+    URL = URL.replace('?cmp=rss', '')
 
-# get story contents, title and author
-story_content = soup.find('div', {'class': 'story'}).find_all('p')
-story_title = soup.find('h1', {'class': 'detailHeadline'}).text
-story_author = soup.find('span', {'class': 'authorText'}).find('a').text
+    # get html from url
+    html = requests.get(URL)        
+    soup = BeautifulSoup(html.content, 'lxml')
 
-# story variable will have special characters
-story = ''
+    # get story contents, title and author
+    story_content = soup.find('div', {'class': 'story'}).find_all('p')
+    story_title = soup.find('h1', {'class': 'detailHeadline'}).text
+    story_author = soup.find('span', {'class': 'authorText'}).find('a').text
 
-for paragraph in story_content:
-    story += paragraph.text
-    story += '. '
+    # story variable still has special characters
+    story = ''
+
+    for paragraph in story_content:
+        story += paragraph.text
+        story += '. '
+
+    return story_title, story_author, story

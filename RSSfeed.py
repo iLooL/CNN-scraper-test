@@ -2,6 +2,14 @@ import requests # for url requests
 import feedparser
 
 def getArticleURLs(URL):
+    """[summary]
+    
+    Arguments:
+        URL [string] -- RSS url that you want to get all links from
+    
+    Returns:
+        articles_urls [list] -- returns a list of all URLS found in RSS feed
+    """
     url = URL
 
     # get the RSS feed
