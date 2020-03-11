@@ -1,7 +1,9 @@
 from RSSfeed import getArticleURLs
 from scraper import RSS_Scraper
+import os
 import nltk
 import heapq
+import json
 
 """
     Returns a list of articles from an RSS feed
@@ -60,7 +62,7 @@ def summarize(article_text):
     return summary
 
 class RSS_Articles:
-    def __init__(self, url):
+    def __init__(self, url, article_type):
         """
             Takes URL of entire RSS feed, is a list of Article objects
         
@@ -77,21 +79,57 @@ class RSS_Articles:
         self.articles = []
 
         for url in urls:
-            new_article = Article(url)
+            new_article = Article(url, article_type)
             self.articles.append(new_article)
-            break # remove this for all articles
+            # break # remove this to get all articles
+
+    def write_to_JSON(self):
+        filename = "articles.json"
+
+        # we always want a fresh update so delete file each time
+        if os.path.exists(filename):
+            os.remove(filename)
+            print(os.path.exists(filename))
+
+        f = open("articles.json", "x")
+
+        # do not add a comma on the last JSON entry
+        size = len(self.articles)
+        i = 1
+        # left bracket to start JSON file
+        f.write('[\n')
+
+        for article in self.articles:
+            # must be a dictionary to dump to a json
+            article_json = json.dumps(article.__dict__)
+            f.write(article_json)
+            if i < size:
+                f.write(',')
+
+            f.write("\n")
+            i += 1
+        
+        # close JSON content
+        f.write(']')
+
+
+        # we do not return anything we just write into the JSON file
+        return
 
 class Article:
-    def __init__(self, url):
+    def __init__(self, url, article_type):
         title, author, full_text = RSS_Scraper(url)
         self.title = title
         self.author = author
+        self.url = url
         summarized = summarize(full_text)
         self.summary= summarized
+        self.article_type = article_type
 
 
 
 if __name__ == "__main__":
     url = "https://www.cbc.ca/cmlink/rss-politics"
-    articles = RSS_Articles(url)
-    print(articles.articles[0].summary)
+    articles = RSS_Articles(url, "politics")
+    # j = json.dumps(articles.articles[0].__dict__)
+    articles.write_to_JSON()
