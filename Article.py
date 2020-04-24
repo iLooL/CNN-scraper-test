@@ -83,7 +83,7 @@ class RSS_Articles:
 
         # add to topics list to retreive different topics from CBC RSS feed
         base = "/cmlink/rss-"
-        topics = ["politics"]
+        topics = ["politics", "technology", "sports"]
         article_id = 1
         self.articles = []
 
@@ -96,8 +96,12 @@ class RSS_Articles:
 
             for url in urls:
                 new_article = Article(url, topic, article_id)
-                article_id += 1
-                self.articles.append(new_article)
+
+                # is it a valid article url?
+                if new_article.article_id != -1:
+                    article_id += 1
+                    self.articles.append(new_article)
+                
                 # break # remove this to get all articles
         
 
@@ -136,21 +140,24 @@ class RSS_Articles:
 
 class Article:
     def __init__(self, url, article_type, article_id):
-        title, author, full_text = RSS_Scraper(url)
-        self.article_id = article_id
-        self.title = title
-        self.author = author
-        self.url = url
-        summarized = summarize(full_text)
-        self.summary= summarized
-        self.article_type = article_type
-
+        try:
+            title, author, full_text = RSS_Scraper(url)
+            self.article_id = article_id
+            self.title = title
+            self.author = author
+            self.url = url
+            summarized = summarize(full_text)
+            self.summary= summarized
+            self.article_type = article_type
+            print("Article {} created successfully.".format(article_id))
+        except AttributeError:
+            # set article_id to -1 indicating an error
+            self.article_id = -1
+            print("Article creation error.")
 
 
 if __name__ == "__main__":
     url = "https://www.cbc.ca"
     articles = RSS_Articles(url)
-    print(articles.articles[0].article_id)
-    print(articles.articles[9].article_id)
     # j = json.dumps(articles.articles[0].__dict__)
     articles.write_to_JSON()

@@ -22,17 +22,21 @@ def RSS_Scraper(URL):
     URL = URL.replace('?cmp=rss', '')
 
     # get html from url
-    html = requests.get(URL)        
+    html = requests.get(URL)            
     soup = BeautifulSoup(html.content, 'lxml')
 
     # get story contents, title and author
-    story_content = soup.find('div', {'class': 'story'}).find_all('p')
-    story_title = soup.find('h1', {'class': 'detailHeadline'}).text
+    try:
+        story_content = soup.find('div', {'class': 'story'}).find_all('p')
+        story_title = soup.find('h1', {'class': 'detailHeadline'}).text
+    except AttributeError:
+        # pass error up to Article.py function call
+        raise AttributeError
 
     try:
         story_author = soup.find('span', {'class': 'authorText'}).find('a').text
     except AttributeError as error:
-        story_author = "NO AUTHOR"
+        story_author = "No Author Listed"
 
     # story variable still has special characters
     story = ""
